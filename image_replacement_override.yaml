@@ -1,0 +1,154 @@
+platform: "openshift"
+operator-packagename: "openshift-pipelines-operator-rh"
+image-substitutions:
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-operator-images/operator:release-next
+  replaceLocations:
+    containerTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-operator-images/proxy-webhook:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_PROXY
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/controller:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_TEKTON_PIPELINES_CONTROLLER
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/webhook:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_WEBHOOK
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/entrypoint:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__ENTRYPOINT_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/git-init:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__GIT_IMAGE
+      - IMAGE_ADDONS_PARAM_GITINITIMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/imagedigestexporter:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__IMAGEDIGEST_EXPORTER_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/kubeconfigwriter:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__KUBECONFIG_WRITER_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/pullrequest-init:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__PR_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-pipeline-images/nop:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__NOP_IMAGE
+- image: registry.access.redhat.com/ubi8/ubi-minimal@sha256:b6b0c30bb747dfacee216e5ae2ad02adb18920d8f744c04f29354278e19df2a9
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_PIPELINES_ARG__SHELL_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-triggers-images/controller:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_TRIGGERS_TEKTON_TRIGGERS_CONTROLLER
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-triggers-images/webhook:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_TRIGGERS_WEBHOOK
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-triggers-images/interceptors:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_TRIGGERS_TEKTON_TRIGGERS_CORE_INTERCEPTORS
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-triggers-images/eventlistenersink:release-next
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_TRIGGERS_ARG__EL_IMAGE
+- image: registry.redhat.io/openshift-serverless-1/client-kn-rhel8@sha256:286f6b4c008307df1bc369891ef9e806050d3a5f5e77ee0c9313ffdb350abbcb
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_ADDONS_PARAM_KN_IMAGE
+- image: registry.redhat.io/rhel8/skopeo@sha256:7297e3b42ef1d56a5bc1d64a979d05c157bf31b476cc526386c873a89459610a
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_ADDONS_SKOPEO_COPY
+- image: registry.redhat.io/rhel8/buildah@sha256:99cae35f40c7ec050fed3765b2b27e0b8bbea2aa2da7c16408e2ca13c60ff8ee
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_ADDONS_PARAM_BUILDER_IMAGE
+- image: registry.redhat.io/ocp-tools-4-tech-preview/source-to-image-rhel8@sha256:637c15600359cb45bc01445b5e811b6240ca239f0ebfe406b50146e34f68f631
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_ADDONS_GENERATE
+- image: registry.redhat.io/openshift-pipelines/pipelines-cli-tkn-rhel8@sha256:cc8bbdb079578605a66447529d7de76f32882dc2ada571e39ff18e483cdbdf49
+  replaceLocations:
+    envTargets:
+    - deploymentName: openshift-pipelines-operator
+      containerName: openshift-pipelines-operator
+      envKeys:
+      - IMAGE_JOB_PRUNER_TKN
+      - IMAGE_ADDONS_PARAM_TKN_IMAGE
+- image: image-registry.openshift-image-registry.svc:5000/rhosp-operator-images/webhook:release-next
+  replaceLocations:
+    containerTargets:
+    - deploymentName: tekton-operator-webhook
+      containerName: tekton-operator-webhook
+
+# add thrid party images which are not replaced by operator
+# but pulled directly by tasks here
+defaultRelatedImages: []
+#- image: "" ##<imagename>:<tag> or <imagename>@<sha>
+#  name: "" # ENV key name value
