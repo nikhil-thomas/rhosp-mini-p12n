@@ -28,12 +28,11 @@ function clone_component() {
 function setup_openshift_registry() {
   ## configure openshift internal registry access
   oc patch configs.imageregistry.operator.openshift.io/cluster --patch '{"spec":{"defaultRoute":true}}' --type=merge
-  sleep 20
+  sleep 30
   registry_url=$(oc registry info --public)
   divider
   echo registry_url = ${registry_url}
   divider
-  read
 #   oc registry login --to=$HOME/.docker/config.json --insecure
   oc registry login --to=$HOME/.docker/config.json --insecure    --registry ${registry_url}
 }
@@ -125,8 +124,6 @@ function create_rhosp_bundle() {
   pwd
   ls
   cp ./config.yaml rhosp_operator/operatorhub/openshift/config.yaml
-#   read
-#   gedit rhosp_operator/operatorhub/openshift/config.yaml
   pushd rhosp_operator
   mkdir .bin || true
   divider
@@ -142,7 +139,6 @@ function create_rhosp_bundle() {
   divider
   pwd
   popd
-#   read
   #                 --upgrade-strategy-replaces \
   #                 --upgrade-strategy-replaces \
   #                --operator-release-previous-version ${RHOSP_PREVIOUS_VERSION} \
@@ -157,12 +153,8 @@ function build_push_bundle_image() {
   divider
   pwd
   tree
-  cp -r bundle bundle ~/
-  read
   docker build -f bundle.Dockerfile -t ${bundle_image} .
-  read
   docker push ${bundle_image}
-  read
   popd
 }
 
@@ -212,3 +204,56 @@ function add_operator_to_oncluster_operatorhub() {
   disable_default_operatorhub_sources
   create_custom_catalog
 }
+
+function configure_image_pull_privileges() {
+  oc policy add-role-to-user \
+      system:image-puller system:serviceaccount:openshift-operators:openshift-pipelines-operator \
+      --namespace=rhosp-operator-images
+
+  oc policy add-role-to-user \
+        system:image-puller system:serviceaccount:openshift-pipelines:tekton-pipelines-controller \
+        --namespace=rhosp-pipeline-images
+
+  oc policy add-role-to-user \
+          system:image-puller system:serviceaccount:openshift-pipelines:tekton-pipelines-webhook \
+          --namespace=rhosp-pipeline-images
+
+  oc policy add-role-to-user \
+            system:image-puller system:serviceaccount:openshift-pipelines:tekton-operators-proxy-webhook \
+            --namespace=rhosp-operator-images
+
+  oc policy add-role-to-user \
+          system:image-puller system:serviceaccount:openshift-pipelines:tekton-triggers-controller \
+          --namespace=rhosp-triggers-images
+
+  oc policy add-role-to-user \
+          system:image-puller system:serviceaccount:openshift-pipelines:tekton-triggers-webhook \
+          --namespace=rhosp-triggers-images
+
+  oc policy add-role-to-user \
+            system:image-puller system:serviceaccount:openshift-pipelines:tekton-triggers-core-interceptors \
+            --namespace=rhosp-triggers-images
+}
+
+function set_up_default_and_current_project() {
+  set_up_sa_for_taskruns default
+  current_project=$(oc project --short)
+  if [[ ${current_project} -ne "default" ]]; then
+     set_up_sa_for_taskruns ${current_project}
+  fi
+}
+
+function set_up_sa_for_taskruns() {
+  service_account=pipeline
+  namespace=$1
+
+  oc policy add-role-to-user \
+            system:image-puller system:serviceaccount:${namespace}:${service_account} \
+            --namespace=rhosp-pipeline-images
+
+  oc policy add-role-to-user \
+            system:image-puller system:serviceaccount:${namespace}:${service_account} \
+            --namespace=rhosp-triggers-images
+}
+
+
